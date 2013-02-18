@@ -13,6 +13,12 @@ object EventSource {
 }
 
 trait EventSource {
+  def sendEvent[T](event: T): Unit
+
+  def eventSourceReceive: Actor.Receive
+}
+
+trait ProductionEventSource extends EventSource {
   this: Actor =>
 
   import EventSource._
@@ -32,6 +38,7 @@ trait EventSource {
   def eventSourceReceive: Receive = {
     case RegisterListener(listener) =>
       listeners = listeners :+ listener
+
     case UnregisterListener(listener) =>
       listeners = listeners filter {
         _ != listener

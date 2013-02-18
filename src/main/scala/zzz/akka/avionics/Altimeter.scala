@@ -18,9 +18,12 @@ object Altimeter {
   // Sent by the Altimeter at regular intervals
   case class AltitudeUpdate(altitude: Double)
 
+  def apply() = new Altimeter with ProductionEventSource
+
 }
 
-class Altimeter extends Actor with ActorLogging with EventSource {
+class Altimeter extends Actor with ActorLogging {
+    this: EventSource =>
 
   import Altimeter._
 
