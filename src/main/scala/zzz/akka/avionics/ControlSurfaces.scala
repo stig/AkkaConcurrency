@@ -30,6 +30,6 @@ class ControlSurfaces(altimeter: ActorRef) extends Actor {
     // Pilot pushes the stick forward and we inform the
     // Altimeter that we're descending
     case StickForward(amount) =>
-      altimeter ! RateChange(-1 * amount)
+      altimeter ! RateChange(-amount)
   }
 }

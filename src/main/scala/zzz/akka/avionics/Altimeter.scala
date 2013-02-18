@@ -43,8 +43,7 @@ class Altimeter extends Actor with ActorLogging {
 
   // We need to periodically update our altitude.  This
   // scheduled message send will tell us when to do that
-  val ticker = context.system.scheduler.schedule(
-    100.millis, 100.millis, self, Tick)
+  val ticker = context.system.scheduler.schedule(100.millis, 100.millis, self, Tick)
 
   // An internal message we send to ourselves to tell us
   // to update our altitude
@@ -57,6 +56,7 @@ class Altimeter extends Actor with ActorLogging {
       // before multiplying
       rateOfClimb = amount.min(1.0f).max(-1.0f) * maxRateOfClimb
       log info(s"Altimeter changed rate of climb to $rateOfClimb.")
+
     // Calculate a new altitude
     case Tick =>
       val tick = System.currentTimeMillis
