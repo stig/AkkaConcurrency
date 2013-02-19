@@ -18,13 +18,21 @@ class Plane extends Actor with ActorLogging {
   import Altimeter._
   import Plane._
 
+  val cfgstr = "zzz.akka.avionics.flightcrew"
   val altimeter = context.actorOf(Props(Altimeter()), "Altimeter")
 
   val controls = context.actorOf(Props(new ControlSurfaces(altimeter)), "ControlSurfaces")
+  val config = context.system.settings.config
+  val pilot = context.actorOf(Props[Pilot], config.getString(s"$cfgstr.pilotName"))
+  val copilot = context.actorOf(Props[CoPilot], config.getString(s"$cfgstr.copilotName"))
+  val autopilot = context.actorOf(Props[AutoPilot], "AutoPilot")
+  val flightAttendant = context.actorOf(Props(LeadFlightAttendant()), config.getString(s"$cfgstr.leadAttendantName"))
 
-  import EventSource._
   override def preStart() {
-    altimeter ! RegisterListener(self)
+    // Register ourself with the Altimeter to receive updates
+    // on our altitude
+    altimeter ! EventSource.RegisterListener(self)
+    List(pilot, copilot) foreach { _ ! Pilots.ReadyToGo }
   }
 
   def receive = {
